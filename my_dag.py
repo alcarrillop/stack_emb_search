@@ -1,6 +1,6 @@
 from datetime import datetime
 from airflow import DAG
-from airflow.operators.python_operator import PythonOperator
+from airflow.operators.python import PythonOperator
 from main import fetch_questions_and_answers, check_existing_records
 
 # Define los argumentos por defecto del DAG
@@ -18,7 +18,7 @@ with DAG(
     'stack_overflow_data_ingestion',
     default_args=default_args,
     description='Ingest Stack Overflow data into PostgreSQL',
-    schedule_interval='@daily',
+    schedule='@daily',
 ) as dag:
     # Define las tareas de tu DAG
     fetch_data_task = PythonOperator(
@@ -28,8 +28,7 @@ with DAG(
 
     check_existing_records_task = PythonOperator(
         task_id='check_existing_records_task',
-        python_callable=check_existing_records,
-        provide_context=True,
+        python_callable=check_existing_records
     )
 
     # Establece las dependencias entre las tareas
